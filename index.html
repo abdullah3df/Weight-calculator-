@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>StrucCal Pro - Engineer Edition</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Chakra+Petch:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            /* Dark Mode (Default) */
+            --bg-color: #0b1120;
+            --bg-gradient: radial-gradient(circle at 50% 0%, #172033 0%, #0b1120 80%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+            --modal-bg: rgba(11, 17, 32, 0.98);
+            
+            --primary: #3b82f6;
+            --status-safe: #10b981;
+            --status-warn: #f59e0b;
+            --status-dang: #ef4444;
+            
+            --font-ar: 'Cairo', sans-serif;
+            --font-en: 'Inter', sans-serif;
+            --font-digit: 'Chakra Petch', monospace;
+        }
+
+        /* Light Mode Overrides */
+        [data-theme="light"] {
+            --bg-color: #f1f5f9;
+            --bg-gradient: radial-gradient(circle at 50% 0%, #e2e8f0 0%, #f1f5f9 80%);
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --glass-border: 1px solid rgba(0, 0, 0, 0.05);
+            --modal-bg: rgba(255, 255, 255, 0.98);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background-color: var(--bg-color);
+            background-image: var(--bg-gradient);
+            color: var(--text-main);
+            font-family: var(--font-en);
+            min-height: 100vh;
+            padding-bottom: 30px;
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        [dir="rtl"] body { font-family: var(--font-ar); }
+
+        .container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 15px; }
+
+        /* --- HEADER --- */
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 0; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        [data-theme="light"] header { border-bottom-color: rgba(0,0,0,0.05); }
+
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 1.2rem; color: var(--primary); font-weight: 700; }
+        
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+
+        /* Theme Toggle Button */
+        .icon-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-main); width: 40px; height: 40px; border-radius: 12px;
+            display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;
+        }
+        [data-theme="light"] .icon-btn { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+        .icon-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* --- CUSTOM LANG DROPDOWN --- */
+        .lang-wrapper { position: relative; z-index: 50; }
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main); padding: 8px 12px; border-radius: 12px;
+            cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem;
+            min-width: 100px; justify-content: space-between; transition: 0.3s;
+        }
+        [data-theme="light"] .lang-btn { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+        .lang-menu {
+            position: absolute; top: 120%; right: 0; width: 150px;
+            background: var(--bg-color); border: 1px solid var(--primary);
+            border-radius: 12px; padding: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            opacity: 0; visibility: hidden; transform: translateY(-10px);
+            transition: all 0.2s;
+        }
+        [dir="rtl"] .lang-menu { right: auto; left: 0; }
+        .lang-menu.show { opacity: 1; visibility: visible; transform: translateY(0); }
+        .lang-option {
+            padding: 8px 10px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px;
+            color: var(--text-muted); font-size: 0.85rem; transition: 0.2s;
+        }
+        .lang-option:hover, .lang-option.selected { background: rgba(59, 130, 246, 0.15); color: var(--text-main); }
+
+        /* --- MAIN LAYOUT --- */
+        .main-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 900px) { .main-grid { grid-template-columns: 1fr 1.3fr; gap: 40px; } }
+
+        /* Glass Panel */
+        .glass-panel {
+            background: var(--card-bg); border-radius: 16px; padding: 20px;
+            border: var(--glass-border); backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; font-weight: 600; }
+
+        /* Controls */
+        .type-toggles { display: flex; gap: 8px; margin-bottom: 20px; }
+        .type-card {
+            flex: 1; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            padding: 10px 5px; border-radius: 10px; text-align: center; cursor: pointer; transition: 0.2s;
+        }
+        [data-theme="light"] .type-card { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
+        .type-card.active { background: rgba(59,130,246,0.2); border-color: var(--primary); }
+        .type-card h3 { font-size: 1rem; margin-bottom: 2px; color: var(--text-main); }
+        .type-card span { font-size: 0.65rem; color: var(--text-muted); }
+
+        /* Size Button */
+        .size-trigger-btn {
+            width: 100%; background: rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.1);
+            padding: 12px 15px; border-radius: 12px; display: flex; justify-content: space-between;
+            align-items: center; cursor: pointer; margin-bottom: 20px;
+        }
+        [data-theme="light"] .size-trigger-btn { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
+        .current-size-display { font-family: var(--font-digit); font-size: 1.4rem; color: var(--text-main); }
+
+        /* Inputs */
+        .input-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        input[type="number"] {
+            background: rgba(0,0,0,0.2); border: 1px solid var(--primary); color: var(--text-main);
+            font-family: var(--font-digit); font-size: 1.1rem; padding: 10px; border-radius: 8px;
+            width: 80px; text-align: center; outline: none;
+        }
+        input[type=range] { flex: 1; -webkit-appearance: none; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
+            background: var(--primary); margin-top: -8px; box-shadow: 0 0 10px var(--primary); border: 2px solid #fff;
+        }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: rgba(150,150,150,0.2); border-radius: 2px; }
+
+        /* --- RIGHT PANEL --- */
+        .canvas-container {
+            width: 100%; height: 260px;
+            background: radial-gradient(circle at center, #1e293b 0%, #000 100%);
+            border-radius: 16px; overflow: hidden; position: relative;
+            margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        [data-theme="light"] .canvas-container { background: #e2e8f0; border-color: rgba(0,0,0,0.1); }
+        @media (min-width: 768px) { .canvas-container { height: 350px; } }
+
+        /* Result Screen */
+        .result-screen {
+            background: #000; border-radius: 16px; padding: 25px 20px; position: relative;
+            overflow: hidden; border: 1px solid #333; text-align: center; transition: 0.3s;
+        }
+        .screen-label { font-size: 0.75rem; letter-spacing: 1px; color: #555; text-transform: uppercase; display: block; margin-bottom: 5px; }
+        .weight-wrapper { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; line-height: 1; }
+        #animatedWeight {
+            font-family: var(--font-digit); font-weight: 700; color: var(--status-safe);
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.4); font-size: clamp(3.5rem, 12vw, 6rem);
+        }
+        .unit-tag { font-family: var(--font-digit); font-size: 1.2rem; color: #666; margin-left: 8px; font-weight: 600; }
+        .weight-bar-container { width: 100%; height: 6px; background: #222; margin-top: 15px; border-radius: 3px; overflow: hidden; }
+        .weight-bar-fill { height: 100%; width: 0%; background: var(--status-safe); transition: width 0.5s; }
+
+        .state-warning #animatedWeight { color: var(--status-warn); text-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
+        .state-warning .weight-bar-fill { background: var(--status-warn); }
+        .state-danger { border-color: rgba(239, 68, 68, 0.3); }
+        .state-danger #animatedWeight { color: var(--status-dang); text-shadow: 0 0 30px rgba(239, 68, 68, 0.5); }
+        .state-danger .weight-bar-fill { background: var(--status-dang); }
+
+        /* --- ACTION BAR (NEW) --- */
+        .action-bar {
+            display: flex; gap: 10px; margin-top: 20px;
+        }
+        .action-btn {
+            flex: 1; background: var(--card-bg); border: var(--glass-border); color: var(--text-main);
+            padding: 12px; border-radius: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center;
+            gap: 8px; font-size: 0.9rem; transition: 0.2s;
+        }
+        .action-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+        /* --- HISTORY PANEL (NEW) --- */
+        .history-panel {
+            position: fixed; top: 0; right: -320px; width: 300px; height: 100%;
+            background: var(--modal-bg); backdrop-filter: blur(10px); z-index: 1000;
+            padding: 20px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -5px 0 30px rgba(0,0,0,0.5); border-left: 1px solid var(--primary);
+            display: flex; flex-direction: column;
+        }
+        [dir="rtl"] .history-panel { right: auto; left: -320px; border-left: none; border-right: 1px solid var(--primary); }
+        .history-panel.open { right: 0; }
+        [dir="rtl"] .history-panel.open { left: 0; }
+
+        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .history-list { flex: 1; overflow-y: auto; }
+        .history-item {
+            background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;
+            margin-bottom: 10px; cursor: pointer; transition: 0.2s; border: 1px solid transparent;
+        }
+        .history-item:hover { border-color: var(--primary); background: rgba(59,130,246,0.1); }
+        .history-date { font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 4px; }
+        .history-details { font-weight: bold; font-family: var(--font-digit); display: flex; justify-content: space-between; }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 2000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: 0.3s;
+        }
+        .modal-overlay.open { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: var(--bg-color); width: 90%; max-width: 500px; border-radius: 16px;
+            border: 1px solid var(--primary); padding: 20px;
+            transform: scale(0.95); transition: 0.3s; max-height: 80vh; display: flex; flex-direction: column;
+        }
+        .modal-overlay.open .modal-content { transform: scale(1); }
+        .modal-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 8px;
+            overflow-y: auto; padding-right: 5px; margin-top: 10px;
+        }
+        .modal-size-item {
+            background: rgba(125,125,125,0.1); padding: 10px; text-align: center;
+            border-radius: 8px; font-family: var(--font-digit); cursor: pointer; color: var(--text-muted);
+        }
+        .modal-size-item.active { background: var(--primary); color: #fff; }
+
+        /* --- PRINT STYLES --- */
+        @media print {
+            body { background: #fff; color: #000; }
+            header, .glass-panel, .action-bar, .history-panel, .lang-wrapper, .icon-btn { display: none !important; }
+            .container { max-width: 100%; margin: 0; padding: 20px; }
+            .main-grid { display: block; }
+            .right-panel { width: 100%; }
+            .result-screen { border: 2px solid #000; background: #fff; color: #000; box-shadow: none; margin-top: 20px; }
+            .screen-label { color: #000; }
+            #animatedWeight { color: #000 !important; text-shadow: none !important; font-size: 4rem; }
+            .weight-bar-container { display: none; }
+            
+            /* Print Header */
+            #printHeader { display: block !important; text-align: center; margin-bottom: 40px; border-bottom: 2px solid #000; padding-bottom: 20px; }
+            #printImg { display: block !important; margin: 0 auto 20px auto; max-width: 80%; border: 1px solid #ccc; }
+        }
+        #printHeader, #printImg { display: none; }
+    </style>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div class="history-panel" id="historyPanel">
+        <div class="history-header">
+            <h3 style="color:var(--primary);" data-i18n="history">History Log</h3>
+            <button onclick="toggleHistory(false)" style="background:none; border:none; color:var(--text-main); font-size:1.5rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="history-list" id="historyList">
+            <div style="text-align:center; color:var(--text-muted); padding-top:20px;">No records yet</div>
+        </div>
+    </div>
+
+    <div id="sizeModal" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(125,125,125,0.2); padding-bottom:10px;">
+                <h3 style="color:var(--text-main); font-size: 1.1rem;" data-i18n="selectSize">Select Size</h3>
+                <button id="closeModalBtn" style="background:none; border:none; color:var(--text-main); font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            <div class="modal-grid" id="modalSizeGrid"></div>
+        </div>
+    </div>
+
+    <div id="printHeader">
+        <h1>StrucCal Pro Report</h1>
+        <p>Engineering Steel Weight Calculation</p>
+        <p id="printDate"></p>
+    </div>
+    <img id="printImg" src="" alt="3D View">
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 6h16M4 18h16M12 6v12" />
+                </svg>
+                <span>StrucCal <span style="color:var(--text-main);">PRO</span></span>
+            </div>
+            
+            <div class="header-actions">
+                <div class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Toggle Theme">
+                    ☀️
+                </div>
+
+                <div class="lang-wrapper">
+                    <div class="lang-btn" onclick="toggleLangMenu(event)">
+                        <span id="currentLangLabel"><span class="flag">🇺🇸</span> EN</span>
+                        <small>▼</small>
+                    </div>
+                    <div class="lang-menu" id="langMenu">
+                        <div class="lang-option selected" onclick="selectLang('en')"><span class="flag">🇺🇸</span> English</div>
+                        <div class="lang-option" onclick="selectLang('ar')"><span class="flag">🇸🇦</span> العربية</div>
+                        <div class="lang-option" onclick="selectLang('de')"><span class="flag">🇩🇪</span> Deutsch</div>
+                        <div class="lang-option" onclick="selectLang('fr')"><span class="flag">🇫🇷</span> Français</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-grid">
+            
+            <div class="glass-panel">
+                <div class="type-toggles">
+                    <div class="type-card active" data-type="HEA"><h3>HEA</h3><span data-i18n="light">Light</span></div>
+                    <div class="type-card" data-type="HEB"><h3>HEB</h3><span data-i18n="standard">Standard</span></div>
+                    <div class="type-card" data-type="HEM"><h3>HEM</h3><span data-i18n="heavy">Heavy</span></div>
+                </div>
+
+                <div class="size-trigger-btn" id="openModalBtn">
+                    <div>
+                        <span class="label" style="margin-bottom:2px;" data-i18n="selectSize">Size</span>
+                        <div class="current-size-display">
+                            <span id="displayType" style="color:var(--primary);">HEA</span> 
+                            <span id="displaySize">100</span>
+                        </div>
+                    </div>
+                    <div style="opacity:0.5; font-size: 0.8rem;">▼</div>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <span class="label" data-i18n="enterLength">Length (mm)</span>
+                    <div class="input-row">
+                        <input type="number" id="lengthInput" value="1000" min="100" max="12000">
+                        <input type="range" id="lengthRange" min="100" max="12000" step="100" value="1000">
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="canvas-container">
+                    <div id="webgl-canvas" style="width:100%; height:100%;"></div>
+                </div>
+
+                <div class="result-screen" id="mainScreen">
+                    <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; pointer-events:none; opacity:0.3;"></div>
+                    <span class="screen-label" data-i18n="totalWeight">CALCULATED WEIGHT</span>
+                    
+                    <div class="weight-wrapper">
+                        <div id="animatedWeight">000.00</div>
+                        <div class="unit-tag" id="unitDisplay">KG</div>
+                    </div>
+
+                    <div class="weight-bar-container">
+                        <div class="weight-bar-fill" id="weightBar"></div>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <button class="action-btn" id="saveBtn">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><path d="M17 21v-8H7v8"></path><path d="M7 3v5h8"></path></svg>
+                        <span data-i18n="save">Save</span>
+                    </button>
+                    <button class="action-btn" onclick="toggleHistory(true)">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="10"></circle></svg>
+                        <span data-i18n="history">History</span>
+                    </button>
+                    <button class="action-btn" id="printBtn">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><path d="M6 14h12v8H6z"></path></svg>
+                        <span data-i18n="print">Report</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // --- DATA ---
+        const steelDatabase = {
+            'HEA': { 100: {h:96,b:100,tw:5,tf:8,w:16.7}, 120: {h:114,b:120,tw:5,tf:8,w:19.9}, 140: {h:133,b:140,tw:5.5,tf:8.5,w:24.7}, 160: {h:152,b:160,tw:6,tf:9,w:30.4}, 180: {h:171,b:180,tw:6,tf:9.5,w:35.5}, 200: {h:190,b:200,tw:6.5,tf:10,w:42.3}, 220: {h:210,b:220,tw:7,tf:11,w:50.5}, 240: {h:230,b:240,tw:7.5,tf:12,w:60.3}, 260: {h:250,b:260,tw:7.5,tf:12.5,w:68.2}, 280: {h:270,b:280,tw:8,tf:13,w:76.4}, 300: {h:290,b:300,tw:8.5,tf:14,w:88.3}, 400: {h:390,b:300,tw:11,tf:19,w:125}, 500: {h:490,b:300,tw:12,tf:23,w:155}, 600: {h:590,b:300,tw:13,tf:25,w:178} },
+            'HEB': { 100: {h:100,b:100,tw:6,tf:10,w:20.4}, 120: {h:120,b:120,tw:6.5,tf:11,w:26.7}, 140: {h:140,b:140,tw:7,tf:12,w:33.7}, 160: {h:160,b:160,tw:8,tf:13,w:42.6}, 180: {h:180,b:180,tw:8.5,tf:14,w:51.2}, 200: {h:200,b:200,tw:9,tf:15,w:61.3}, 220: {h:220,b:220,tw:9.5,tf:16,w:71.5}, 240: {h:240,b:240,tw:10,tf:17,w:83.2}, 260: {h:260,b:260,tw:10,tf:17.5,w:93.0}, 280: {h:280,b:280,tw:10.5,tf:18,w:103}, 300: {h:300,b:300,tw:11,tf:19,w:117}, 400: {h:400,b:300,tw:13.5,tf:24,w:155}, 500: {h:500,b:300,tw:14.5,tf:28,w:187}, 600: {h:600,b:300,tw:15.5,tf:30,w:212} },
+            'HEM': { 100: {h:120,b:106,tw:12,tf:20,w:41.8}, 120: {h:140,b:126,tw:12.5,tf:21,w:52.1}, 140: {h:160,b:146,tw:13,tf:22,w:63.2}, 160: {h:180,b:166,tw:14,tf:23,w:76.2}, 180: {h:200,b:186,tw:14.5,tf:24,w:88.9}, 200: {h:220,b:206,tw:15,tf:25,w:103}, 220: {h:240,b:226,tw:15.5,tf:26,w:117}, 240: {h:270,b:248,tw:18,tf:32,w:157}, 300: {h:340,b:310,tw:21,tf:39,w:238}, 400: {h:432,b:307,tw:21,tf:40,w:256}, 500: {h:524,b:306,tw:21,tf:40,w:270}, 600: {h:620,b:305,tw:21,tf:40,w:285} }
+        };
+
+        const translations = {
+            en: { light:"Light", standard:"Standard", heavy:"Heavy", enterLength:"Length (mm)", selectSize:"Select Size", totalWeight:"CALCULATED WEIGHT", save:"Save", history:"History", print:"Report" },
+            ar: { light:"خفيف", standard:"قياسي", heavy:"ثقيل", enterLength:"الطول (مم)", selectSize:"اختر الحجم", totalWeight:"الوزن المحسوب", save:"حفظ", history:"السجل", print:"تقرير" },
+            de: { light:"Leicht", standard:"Standard", heavy:"Schwer", enterLength:"Länge (mm)", selectSize:"Größe wählen", totalWeight:"BERECHNETES GEWICHT", save:"Speichern", history:"Verlauf", print:"Bericht" },
+            fr: { light:"Léger", standard:"Standard", heavy:"Lourd", enterLength:"Longueur (mm)", selectSize:"Choisir la taille", totalWeight:"POIDS CALCULÉ", save:"Enregistrer", history:"Historique", print:"Rapport" }
+        };
+
+        // --- STATE ---
+        let state = { lang: 'en', type: 'HEA', size: 100, length: 1000, currentDisplayedWeight: 0, theme: 'dark' };
+        let scene, camera, renderer, mesh, controls, animationFrameId;
+
+        // --- INIT ---
+        function init() {
+            init3D();
+            setupEvents();
+            renderModalGrid();
+            calculateAndAnimate();
+            loadHistory();
+        }
+
+        // --- GLOBAL FUNCTIONS EXPORT ---
+        window.toggleTheme = () => {
+            state.theme = state.theme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', state.theme);
+            document.getElementById('themeBtn').textContent = state.theme === 'dark' ? '☀️' : '🌙';
+            // fix 3d canvas bg
+            const color = state.theme === 'dark' ? 0x000000 : 0xe2e8f0;
+            renderer.setClearColor(color, state.theme === 'dark' ? 0 : 1);
+        };
+
+        window.toggleLangMenu = (e) => {
+            e.stopPropagation();
+            document.getElementById('langMenu').classList.toggle('show');
+        };
+
+        window.selectLang = (code) => {
+            state.lang = code;
+            document.documentElement.dir = (code === 'ar') ? 'rtl' : 'ltr';
+            const t = translations[code];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.textContent = t[key];
+            });
+
+            // Update Label
+            const flags = { en: '🇺🇸', ar: '🇸🇦', de: '🇩🇪', fr: '🇫🇷' };
+            const labels = { en: 'EN', ar: 'AR', de: 'DE', fr: 'FR' };
+            document.getElementById('currentLangLabel').innerHTML = `<span class="flag">${flags[code]}</span> ${labels[code]}`;
+            document.getElementById('langMenu').classList.remove('show');
+            document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('selected'));
+        };
+
+        window.toggleHistory = (show) => {
+            const p = document.getElementById('historyPanel');
+            if(show) p.classList.add('open'); else p.classList.remove('open');
+        };
+
+        window.addEventListener('click', () => {
+            const menu = document.getElementById('langMenu');
+            if(menu) menu.classList.remove('show');
+        });
+
+        function setupEvents() {
+            // Type Cards
+            document.querySelectorAll('.type-card').forEach(card => {
+                card.addEventListener('click', () => setProfileType(card.getAttribute('data-type')));
+            });
+
+            // Inputs
+            const lInput = document.getElementById('lengthInput');
+            const lRange = document.getElementById('lengthRange');
+            lInput.addEventListener('input', (e) => updateLength(e.target.value));
+            lRange.addEventListener('input', (e) => updateLength(e.target.value));
+
+            // Modal
+            document.getElementById('openModalBtn').addEventListener('click', () => toggleModal(true));
+            document.getElementById('closeModalBtn').addEventListener('click', () => toggleModal(false));
+            document.getElementById('sizeModal').addEventListener('click', (e) => { if(e.target.id === 'sizeModal') toggleModal(false); });
+
+            // Actions
+            document.getElementById('saveBtn').addEventListener('click', addToHistory);
+            document.getElementById('printBtn').addEventListener('click', printReport);
+        }
+
+        // --- LOGIC ---
+        function setProfileType(type) {
+            state.type = type;
+            document.getElementById('displayType').textContent = type;
+            document.querySelectorAll('.type-card').forEach(c => c.classList.remove('active'));
+            document.querySelector(`.type-card[data-type="${type}"]`).classList.add('active');
+            
+            state.size = 100; // Reset
+            document.getElementById('displaySize').textContent = 100;
+            renderModalGrid();
+            calculateAndAnimate();
+            update3D();
+        }
+
+        function updateLength(val) {
+            state.length = parseInt(val);
+            document.getElementById('lengthInput').value = state.length;
+            document.getElementById('lengthRange').value = state.length;
+            calculateAndAnimate();
+            update3DGeometryLength();
+        }
+
+        function calculateAndAnimate() {
+            const data = steelDatabase[state.type][state.size];
+            if (!data) return;
+            const trueWeightKg = (state.length / 1000) * data.w;
+            
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            const startVal = state.currentDisplayedWeight;
+            const diff = trueWeightKg - startVal;
+            const startTime = performance.now();
+            const duration = 500;
+
+            function update(time) {
+                const elapsed = time - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const ease = 1 - Math.pow(1 - progress, 3);
+                const current = startVal + (diff * ease);
+                
+                state.currentDisplayedWeight = current;
+                renderResult(current);
+
+                if (progress < 1) animationFrameId = requestAnimationFrame(update);
+            }
+            animationFrameId = requestAnimationFrame(update);
+        }
+
+        function renderResult(val) {
+            const displayEl = document.getElementById('animatedWeight');
+            const unitEl = document.getElementById('unitDisplay');
+            const screenEl = document.getElementById('mainScreen');
+            const barEl = document.getElementById('weightBar');
+            
+            screenEl.className = 'result-screen'; 
+
+            if (val >= 1000) {
+                displayEl.textContent = (val / 1000).toFixed(3);
+                unitEl.textContent = "TON";
+                screenEl.classList.add('state-danger');
+                barEl.style.width = '100%';
+            } else {
+                displayEl.textContent = val.toFixed(2);
+                unitEl.textContent = "KG";
+                let pct = (val / 1000) * 100;
+                if (val >= 500) screenEl.classList.add('state-warning');
+                barEl.style.width = `${pct}%`;
+            }
+        }
+
+        function toggleModal(show) {
+            const m = document.getElementById('sizeModal');
+            if(show) m.classList.add('open'); else m.classList.remove('open');
+        }
+
+        function renderModalGrid() {
+            const grid = document.getElementById('modalSizeGrid');
+            grid.innerHTML = '';
+            const sizes = Object.keys(steelDatabase[state.type]);
+            sizes.forEach(s => {
+                const item = document.createElement('div');
+                item.className = `modal-size-item ${s == state.size ? 'active' : ''}`;
+                item.textContent = s;
+                item.onclick = () => {
+                    state.size = s;
+                    document.getElementById('displaySize').textContent = s;
+                    toggleModal(false);
+                    calculateAndAnimate();
+                    update3D();
+                };
+                grid.appendChild(item);
+            });
+        }
+
+        // --- HISTORY LOGIC ---
+        function addToHistory() {
+            const data = steelDatabase[state.type][state.size];
+            const weight = (state.length / 1000) * data.w;
+            const item = {
+                type: state.type,
+                size: state.size,
+                length: state.length,
+                weight: weight.toFixed(2),
+                date: new Date().toLocaleTimeString()
+            };
+            
+            let history = JSON.parse(localStorage.getItem('strucCalHistory') || '[]');
+            history.unshift(item); // Add to top
+            if (history.length > 10) history.pop(); // Keep last 10
+            localStorage.setItem('strucCalHistory', JSON.stringify(history));
+            loadHistory();
+            
+            // Visual feedback
+            const btn = document.getElementById('saveBtn');
+            const oldText = btn.innerHTML;
+            btn.innerHTML = `✅ Saved`;
+            setTimeout(() => btn.innerHTML = oldText, 1500);
+        }
+
+        function loadHistory() {
+            const list = document.getElementById('historyList');
+            const history = JSON.parse(localStorage.getItem('strucCalHistory') || '[]');
+            list.innerHTML = '';
+            
+            if(history.length === 0) {
+                list.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:20px;">No history yet</div>`;
+                return;
+            }
+
+            history.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'history-item';
+                el.innerHTML = `
+                    <span class="history-date">${item.date}</span>
+                    <div class="history-details">
+                        <span>${item.type} ${item.size} (${item.length}mm)</span>
+                        <span style="color:var(--primary)">${item.weight} KG</span>
+                    </div>
+                `;
+                el.onclick = () => {
+                    setProfileType(item.type);
+                    state.size = item.size;
+                    document.getElementById('displaySize').textContent = item.size;
+                    updateLength(item.length);
+                    toggleHistory(false);
+                    renderModalGrid();
+                    update3D();
+                };
+                list.appendChild(el);
+            });
+        }
+
+        function printReport() {
+            // 1. Capture 3D Canvas
+            const imgData = renderer.domElement.toDataURL("image/png");
+            document.getElementById('printImg').src = imgData;
+            document.getElementById('printDate').innerText = new Date().toLocaleString();
+            
+            // 2. Print
+            window.print();
+        }
+
+        // --- THREE.JS ---
+        function init3D() {
+            const container = document.getElementById('webgl-canvas');
+            const w = container.offsetWidth;
+            const h = container.offsetHeight;
+
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, w/h, 0.1, 1000);
+            camera.position.set(18, 14, 18);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); // Preserve for printing
+            renderer.setSize(w, h);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setClearColor(0x000000, 0);
+            container.appendChild(renderer.domElement);
+
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+
+            const al = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(al);
+            const dl = new THREE.DirectionalLight(0xffffff, 1.2); dl.position.set(10, 20, 10); scene.add(dl);
+            const bl = new THREE.DirectionalLight(0x3b82f6, 0.8); bl.position.set(-10, 5, -5); scene.add(bl);
+            
+            scene.add(new THREE.GridHelper(50, 50, 0x444444, 0x111111));
+
+            update3D();
+            animate();
+            
+            window.addEventListener('resize', () => {
+                const nw = container.offsetWidth;
+                const nh = container.offsetHeight;
+                camera.aspect = nw/nh;
+                camera.updateProjectionMatrix();
+                renderer.setSize(nw, nh);
+            });
+        }
+
+        function update3D() {
+            if (mesh) { scene.remove(mesh); mesh.geometry.dispose(); mesh.material.dispose(); }
+            const data = steelDatabase[state.type][state.size];
+            const s = 0.04; 
+            
+            const shape = new THREE.Shape();
+            const H = data.h * s, B = data.b * s, TW = data.tw * s, TF = data.tf * s;
+            shape.moveTo(-B/2, H/2); shape.lineTo(B/2, H/2); shape.lineTo(B/2, H/2 - TF); 
+            shape.lineTo(TW/2, H/2 - TF); shape.lineTo(TW/2, -H/2 + TF); shape.lineTo(B/2, -H/2 + TF); 
+            shape.lineTo(B/2, -H/2); shape.lineTo(-B/2, -H/2); shape.lineTo(-B/2, -H/2 + TF);
+            shape.lineTo(-TW/2, -H/2 + TF); shape.lineTo(-TW/2, H/2 - TF); shape.lineTo(-B/2, H/2 - TF);
+            shape.lineTo(-B/2, H/2);
+
+            const visualLen = (state.length / 1000) * 3.5; 
+            const geo = new THREE.ExtrudeGeometry(shape, { steps: 1, depth: visualLen, bevelEnabled: false });
+            geo.center();
+            
+            const mat = new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.7, roughness: 0.3 });
+            mesh = new THREE.Mesh(geo, mat);
+            mesh.rotation.y = Math.PI / 2;
+            mesh.position.y = (data.h * s) / 2;
+            scene.add(mesh);
+        }
+
+        function update3DGeometryLength() { update3D(); }
+        function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
+
+        // Start
+        init();
+    </script>
+</body>
+</html>
