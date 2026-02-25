@@ -5,231 +5,241 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>StrucCal Pro - Engineer Edition</title>
     
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="StrucCal Pro">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230f172a'/%3E%3Cpath d='M25 20h50v15H60v30h15v15H25V65h15V35H25z' fill='%233b82f6'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230f172a'/%3E%3Cpath d='M25 20h50v15H60v30h15v15H25V65h15V35H25z' fill='%233b82f6'/%3E%3C/svg%3E">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Chakra+Petch:wght@400;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Chakra+Petch:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <style>
-        /* --- CSS VARIABLES --- */
+        /* --- التصميم الجديد: مسطح، هادئ، واحترافي --- */
         :root {
-            --bg-color: #0b1120;
-            --bg-gradient: radial-gradient(circle at 50% 0%, #172033 0%, #0b1120 80%);
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --text-main: #f8fafc;
+            /* Dark Mode */
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f1f5f9;
             --text-muted: #94a3b8;
-            --glass-border: 1px solid rgba(255, 255, 255, 0.08);
-            --modal-bg: rgba(11, 17, 32, 0.98);
+            --border-color: #334155;
+            --input-bg: #0f172a;
             
             --primary: #3b82f6;
+            --primary-hover: #2563eb;
             --status-safe: #10b981;
-            --status-warn: #f59e0b;
             --status-dang: #ef4444;
+            --status-warn: #f59e0b;
             
             --font-ar: 'Cairo', sans-serif;
             --font-en: 'Inter', sans-serif;
             --font-digit: 'Chakra Petch', monospace;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         [data-theme="light"] {
-            --bg-color: #f1f5f9;
-            --bg-gradient: radial-gradient(circle at 50% 0%, #e2e8f0 0%, #f1f5f9 80%);
-            --card-bg: rgba(255, 255, 255, 0.85);
+            /* Light Mode */
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --glass-border: 1px solid rgba(0, 0, 0, 0.05);
-            --modal-bg: rgba(255, 255, 255, 0.98);
+            --border-color: #e2e8f0;
+            --input-bg: #f1f5f9;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         body {
             background-color: var(--bg-color);
-            background-image: var(--bg-gradient);
             color: var(--text-main);
             font-family: var(--font-en);
             min-height: 100vh;
-            padding-bottom: 30px;
-            overflow-x: hidden;
-            transition: background 0.3s, color 0.3s;
+            padding-bottom: 40px;
+            transition: background-color 0.3s, color 0.3s;
         }
-
         [dir="rtl"] body { font-family: var(--font-ar); }
 
-        .container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 15px; }
+        .container { width: 100%; max-width: 1000px; margin: 0 auto; padding: 20px; }
 
         header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 0; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 20px 0; margin-bottom: 30px; border-bottom: 1px solid var(--border-color);
         }
-        [data-theme="light"] header { border-bottom-color: rgba(0,0,0,0.05); }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; color: var(--text-main); font-weight: 700; letter-spacing: -0.5px; }
+        .logo svg { color: var(--primary); }
+        
+        .header-actions { display: flex; gap: 12px; align-items: center; }
 
-        .logo { display: flex; align-items: center; gap: 8px; font-size: 1.2rem; color: var(--primary); font-weight: 700; }
-        .header-actions { display: flex; gap: 10px; align-items: center; }
-
+        button { font-family: inherit; cursor: pointer; border: none; outline: none; transition: 0.2s; }
+        
         .icon-btn {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-main); width: 40px; height: 40px; border-radius: 12px;
-            display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            color: var(--text-main); width: 42px; height: 42px; border-radius: 10px;
+            display: flex; justify-content: center; align-items: center; box-shadow: var(--shadow-sm);
         }
-        [data-theme="light"] .icon-btn { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
         .icon-btn:hover { border-color: var(--primary); color: var(--primary); }
 
         .lang-wrapper { position: relative; z-index: 50; }
         .lang-btn {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-main); padding: 8px 12px; border-radius: 12px;
-            cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.9rem;
-            min-width: 100px; justify-content: space-between; transition: 0.3s;
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            color: var(--text-main); padding: 0 15px; height: 42px; border-radius: 10px;
+            display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 500;
+            box-shadow: var(--shadow-sm);
         }
-        [data-theme="light"] .lang-btn { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
         .lang-menu {
-            position: absolute; top: 120%; right: 0; width: 150px;
-            background: var(--bg-color); border: 1px solid var(--primary);
-            border-radius: 12px; padding: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: absolute; top: calc(100% + 8px); right: 0; width: 160px;
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 10px; padding: 8px; box-shadow: var(--shadow-md);
             opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.2s;
         }
         [dir="rtl"] .lang-menu { right: auto; left: 0; }
         .lang-menu.show { opacity: 1; visibility: visible; transform: translateY(0); }
         .lang-option {
-            padding: 8px 10px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px;
-            color: var(--text-muted); font-size: 0.85rem; transition: 0.2s;
+            padding: 10px 12px; border-radius: 6px; display: flex; align-items: center; gap: 10px;
+            color: var(--text-muted); font-size: 0.9rem; cursor: pointer;
         }
-        .lang-option:hover, .lang-option.selected { background: rgba(59, 130, 246, 0.15); color: var(--text-main); }
+        .lang-option:hover, .lang-option.selected { background: var(--input-bg); color: var(--text-main); font-weight: 600; }
 
-        .main-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 900px) { .main-grid { grid-template-columns: 1fr 1.3fr; gap: 40px; } }
+        .main-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+        @media (min-width: 900px) { .main-grid { grid-template-columns: 1fr 1.2fr; } }
 
-        .glass-panel {
-            background: var(--card-bg); border-radius: 16px; padding: 20px;
-            border: var(--glass-border); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        .panel {
+            background: var(--card-bg); border-radius: 16px; padding: 24px;
+            border: 1px solid var(--border-color); box-shadow: var(--shadow-md);
         }
-        .label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; font-weight: 600; }
-
-        .type-toggles { display: flex; gap: 8px; margin-bottom: 20px; }
-        .type-card {
-            flex: 1; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-            padding: 10px 5px; border-radius: 10px; text-align: center; cursor: pointer; transition: 0.2s;
-        }
-        [data-theme="light"] .type-card { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.08); }
-        .type-card.active { background: rgba(59,130,246,0.2); border-color: var(--primary); }
-        .type-card h3 { font-size: 1rem; margin-bottom: 2px; color: var(--text-main); }
-        .type-card span { font-size: 0.65rem; color: var(--text-muted); }
-
-        .size-trigger-btn {
-            width: 100%; background: rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.1);
-            padding: 12px 15px; border-radius: 12px; display: flex; justify-content: space-between;
-            align-items: center; cursor: pointer; margin-bottom: 20px;
-        }
-        [data-theme="light"] .size-trigger-btn { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.1); }
-        .current-size-display { font-family: var(--font-digit); font-size: 1.4rem; color: var(--text-main); }
-
-        .inputs-wrapper { display: flex; gap: 15px; margin-bottom: 20px; }
-        .length-container { flex: 2; }
-        .qty-container { flex: 1; }
-
-        .input-row { display: flex; align-items: center; gap: 10px; }
-        input[type="number"], select {
-            background: rgba(0,0,0,0.2); border: 1px solid var(--primary); color: var(--text-main);
-            font-family: var(--font-digit); font-size: 1.1rem; padding: 10px; border-radius: 8px;
-            outline: none; width: 100%;
-        }
-        input[type="number"].small-input { width: 80px; text-align: center; }
-        select { font-family: var(--font-en); font-size: 0.9rem; }
-        [data-theme="light"] select { background: rgba(255,255,255,0.5); }
         
-        input[type=range] { flex: 1; -webkit-appearance: none; background: transparent; width: 100%; }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%;
-            background: var(--primary); margin-top: -8px; box-shadow: 0 0 10px var(--primary); border: 2px solid #fff;
+        .section-title { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 12px; display: block; }
+
+        .type-toggles { display: flex; gap: 10px; margin-bottom: 24px; background: var(--input-bg); padding: 6px; border-radius: 12px; }
+        .type-card {
+            flex: 1; padding: 10px 5px; border-radius: 8px; text-align: center; cursor: pointer; 
+            color: var(--text-muted); transition: 0.2s; font-weight: 600;
         }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: rgba(150,150,150,0.2); border-radius: 2px; }
+        .type-card.active { background: var(--card-bg); color: var(--text-main); box-shadow: var(--shadow-sm); }
+        .type-card span { display: block; font-size: 0.65rem; font-weight: 400; margin-top: 4px; opacity: 0.8; }
+
+        .size-selector {
+            background: var(--input-bg); border: 1px solid var(--border-color);
+            padding: 16px; border-radius: 12px; display: flex; justify-content: space-between;
+            align-items: center; cursor: pointer; margin-bottom: 24px; transition: 0.2s;
+        }
+        .size-selector:hover { border-color: var(--primary); }
+        .current-size { font-family: var(--font-digit); font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+        .current-size span { color: var(--primary); margin-right: 5px; }
+
+        .input-group { margin-bottom: 24px; }
+        .flex-row { display: flex; align-items: center; gap: 15px; }
+        
+        input[type="number"], select {
+            background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-main);
+            font-family: var(--font-digit); font-size: 1.1rem; padding: 12px; border-radius: 8px; outline: none; transition: 0.2s;
+        }
+        input[type="number"]:focus, select:focus { border-color: var(--primary); }
+        select { font-family: var(--font-en); font-size: 0.95rem; width: 100%; appearance: none; cursor: pointer; }
+
+        input[type=range] { flex: 1; -webkit-appearance: none; background: transparent; height: 40px; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; cursor: pointer;
+            background: #fff; border: 3px solid var(--primary); margin-top: -8px; box-shadow: var(--shadow-sm);
+        }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; background: var(--border-color); border-radius: 3px; }
+
+        .stepper-control {
+            display: flex; align-items: center; background: var(--input-bg);
+            border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden;
+            width: 140px; height: 46px;
+        }
+        .stepper-btn {
+            background: transparent; color: var(--text-main); width: 40px; height: 100%;
+            font-size: 1.2rem; display: flex; justify-content: center; align-items: center;
+        }
+        .stepper-btn:hover { background: var(--border-color); }
+        .stepper-control input {
+            flex: 1; border: none; background: transparent; text-align: center;
+            font-size: 1.2rem; padding: 0; border-radius: 0; box-shadow: none !important;
+        }
 
         .canvas-container {
-            width: 100%; height: 260px; background: radial-gradient(circle at center, #1e293b 0%, #000 100%);
-            border-radius: 16px; overflow: hidden; position: relative; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05);
+            width: 100%; height: 240px; background: var(--input-bg);
+            border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); margin-bottom: 20px;
         }
-        [data-theme="light"] .canvas-container { background: #e2e8f0; border-color: rgba(0,0,0,0.1); }
-        @media (min-width: 768px) { .canvas-container { height: 350px; } }
+        @media (min-width: 768px) { .canvas-container { height: 300px; } }
 
-        .result-screen {
-            background: #000; border-radius: 16px; padding: 25px 20px; position: relative;
-            overflow: hidden; border: 1px solid #333; text-align: center; transition: 0.3s;
+        .result-display {
+            background: var(--input-bg); border-radius: 12px; padding: 24px;
+            border: 1px solid var(--border-color); text-align: center;
         }
-        .screen-label { font-size: 0.75rem; letter-spacing: 1px; color: #555; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        .weight-wrapper { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; line-height: 1; }
-        #animatedWeight {
-            font-family: var(--font-digit); font-weight: 700; color: var(--status-safe);
-            text-shadow: 0 0 20px rgba(16, 185, 129, 0.4); font-size: clamp(3.5rem, 12vw, 6rem);
+        .weight-value {
+            font-family: var(--font-digit); font-weight: 700; color: var(--text-main);
+            font-size: clamp(3rem, 8vw, 4.5rem); line-height: 1.1; margin: 10px 0;
         }
-        .unit-tag { font-family: var(--font-digit); font-size: 1.2rem; color: #666; margin-left: 8px; font-weight: 600; }
-        .weight-bar-container { width: 100%; height: 6px; background: #222; margin-top: 15px; border-radius: 3px; overflow: hidden; }
-        .weight-bar-fill { height: 100%; width: 0%; background: var(--status-safe); transition: width 0.5s; }
-
-        .state-warning #animatedWeight { color: var(--status-warn); text-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
-        .state-warning .weight-bar-fill { background: var(--status-warn); }
-        .state-danger { border-color: rgba(239, 68, 68, 0.3); }
-        .state-danger #animatedWeight { color: var(--status-dang); text-shadow: 0 0 30px rgba(239, 68, 68, 0.5); }
-        .state-danger .weight-bar-fill { background: var(--status-dang); }
-
-        .action-bar { display: flex; gap: 10px; margin-top: 20px; }
-        .action-btn {
-            flex: 1; background: var(--card-bg); border: var(--glass-border); color: var(--text-main);
-            padding: 12px; border-radius: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center;
-            gap: 8px; font-size: 0.9rem; transition: 0.2s;
+        .weight-unit { font-size: 1.2rem; color: var(--text-muted); font-weight: 600; }
+        
+        .action-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .btn {
+            padding: 14px; border-radius: 10px; font-size: 0.95rem; font-weight: 600;
+            display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s;
         }
-        .action-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-secondary { background: var(--input-bg); color: var(--text-main); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
 
-        .history-panel {
-            position: fixed; top: 0; right: -350px; width: 320px; height: 100%;
-            background: var(--modal-bg); backdrop-filter: blur(10px); z-index: 1000;
-            padding: 20px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: -5px 0 30px rgba(0,0,0,0.5); border-left: 1px solid var(--primary);
-            display: flex; flex-direction: column;
+        .side-panel {
+            position: fixed; top: 0; right: -380px; width: 350px; height: 100%;
+            background: var(--card-bg); z-index: 1000; padding: 24px;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 1px solid var(--border-color); display: flex; flex-direction: column;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
         }
-        [dir="rtl"] .history-panel { right: auto; left: -350px; border-left: none; border-right: 1px solid var(--primary); }
-        .history-panel.open { right: 0; }
-        [dir="rtl"] .history-panel.open { left: 0; }
+        [dir="rtl"] .side-panel { right: auto; left: -380px; border-left: none; border-right: 1px solid var(--border-color); box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
+        .side-panel.open { right: 0; }
+        [dir="rtl"] .side-panel.open { left: 0; }
 
-        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color); }
         .history-list { flex: 1; overflow-y: auto; padding-right: 5px; }
         .history-item {
-            background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;
-            margin-bottom: 10px; transition: 0.2s; border: 1px solid transparent; display: flex; justify-content: space-between;
+            background: var(--input-bg); padding: 15px; border-radius: 10px;
+            margin-bottom: 12px; border: 1px solid var(--border-color);
         }
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 2000;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); z-index: 2000;
             display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s;
         }
         .modal-overlay.open { opacity: 1; visibility: visible; }
         .modal-content {
-            background: var(--bg-color); width: 90%; max-width: 500px; border-radius: 16px;
-            border: 1px solid var(--primary); padding: 20px; transform: scale(0.95); transition: 0.3s; max-height: 80vh; display: flex; flex-direction: column;
+            background: var(--card-bg); width: 90%; max-width: 500px; border-radius: 16px;
+            border: 1px solid var(--border-color); padding: 24px; transform: scale(0.95); transition: 0.3s;
+            box-shadow: var(--shadow-md); max-height: 85vh; display: flex; flex-direction: column;
         }
         .modal-overlay.open .modal-content { transform: scale(1); }
         .modal-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 8px;
-            overflow-y: auto; padding-right: 5px; margin-top: 10px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 10px;
+            overflow-y: auto; padding-right: 5px; margin-top: 15px;
         }
-        .modal-size-item {
-            background: rgba(125,125,125,0.1); padding: 10px; text-align: center;
-            border-radius: 8px; font-family: var(--font-digit); cursor: pointer; color: var(--text-muted); transition: 0.2s;
+        .size-badge {
+            background: var(--input-bg); padding: 12px 5px; text-align: center; border: 1px solid transparent;
+            border-radius: 8px; font-family: var(--font-digit); cursor: pointer; color: var(--text-main); transition: 0.2s;
         }
-        .modal-size-item:hover, .modal-size-item.active { background: var(--primary); color: #fff; }
+        .size-badge:hover, .size-badge.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
         @media print {
             body { background: #fff; color: #000; }
-            header, .glass-panel, .action-bar, .history-panel, .lang-wrapper, .icon-btn { display: none !important; }
-            .container { max-width: 100%; margin: 0; padding: 20px; }
+            header, .panel, .action-bar, .side-panel, .modal-overlay { display: none !important; }
+            .container { max-width: 100%; padding: 0; }
             .main-grid { display: block; }
-            .right-panel { width: 100%; }
-            .result-screen { border: 2px solid #000; background: #fff; color: #000; box-shadow: none; margin-top: 20px; }
-            .screen-label { color: #000; }
-            #animatedWeight { color: #000 !important; text-shadow: none !important; font-size: 4rem; }
-            .weight-bar-container { display: none; }
-            #printHeader { display: block !important; text-align: center; margin-bottom: 40px; border-bottom: 2px solid #000; padding-bottom: 20px; }
-            #printImg { display: block !important; margin: 0 auto 20px auto; max-width: 80%; border: 1px solid #ccc; }
+            .result-display { border: 2px solid #000; background: #fff; color: #000; box-shadow: none; margin-top: 20px; }
+            .weight-value { color: #000 !important; }
+            #printHeader { display: block !important; text-align: center; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 15px; }
+            #printImg { display: block !important; margin: 0 auto 20px auto; max-width: 70%; border: 1px solid #ccc; }
         }
         #printHeader, #printImg { display: none; }
     </style>
@@ -245,21 +255,25 @@
 </head>
 <body>
 
-    <div class="history-panel" id="historyPanel">
-        <div class="history-header">
-            <h3 style="color:var(--primary);" data-i18n="projectList">Project List</h3>
-            <button onclick="toggleHistory(false)" style="background:none; border:none; color:var(--text-main); font-size:1.5rem; cursor:pointer;">&times;</button>
+    <div class="side-panel" id="historyPanel">
+        <div class="panel-header">
+            <h3 style="color:var(--text-main); font-weight: 600;" data-i18n="projectList">Project List</h3>
+            <button onclick="toggleHistory(false)" style="background:none; color:var(--text-muted); font-size:1.5rem;">&times;</button>
         </div>
         <div class="history-list" id="historyList">
             <div style="text-align:center; color:var(--text-muted); padding-top:20px;">List is empty</div>
         </div>
+        <button class="btn btn-secondary" id="printBtn" style="margin-top: 15px;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"></path></svg>
+            <span data-i18n="print">Print Report</span>
+        </button>
     </div>
 
     <div id="sizeModal" class="modal-overlay">
         <div class="modal-content">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(125,125,125,0.2); padding-bottom:10px;">
+            <div class="panel-header" style="margin-bottom: 0;">
                 <h3 style="color:var(--text-main); font-size: 1.1rem;" data-i18n="selectSize">Select Size</h3>
-                <button id="closeModalBtn" style="background:none; border:none; color:var(--text-main); font-size:1.5rem; cursor:pointer;">&times;</button>
+                <button id="closeModalBtn" style="background:none; color:var(--text-muted); font-size:1.5rem;">&times;</button>
             </div>
             <div class="modal-grid" id="modalSizeGrid"></div>
         </div>
@@ -275,98 +289,91 @@
     <div class="container">
         <header>
             <div class="logo">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 18h16M12 6v12" /></svg>
-                <span>StrucCal <span style="color:var(--text-main);">PRO</span></span>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 18h16M12 6v12" /></svg>
+                <span>StrucCal Pro</span>
             </div>
             
             <div class="header-actions">
-                <div class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Toggle Theme">☀️</div>
+                <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Toggle Theme">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                </button>
                 <div class="lang-wrapper">
-                    <div class="lang-btn" onclick="toggleLangMenu(event)">
-                        <span id="currentLangLabel"><span class="flag">🇺🇸</span> EN</span>
-                        <small>▼</small>
-                    </div>
+                    <button class="lang-btn" onclick="toggleLangMenu(event)">
+                        <span id="currentLangLabel">🇺🇸 EN</span>
+                    </button>
                     <div class="lang-menu" id="langMenu">
-                        <div class="lang-option selected" onclick="selectLang('en')"><span class="flag">🇺🇸</span> English</div>
-                        <div class="lang-option" onclick="selectLang('ar')"><span class="flag">🇸🇦</span> العربية</div>
-                        <div class="lang-option" onclick="selectLang('de')"><span class="flag">🇩🇪</span> Deutsch</div>
+                        <div class="lang-option selected" onclick="selectLang('en')">🇺🇸 English</div>
+                        <div class="lang-option" onclick="selectLang('ar')">🇸🇦 العربية</div>
+                        <div class="lang-option" onclick="selectLang('de')">🇩🇪 Deutsch</div>
                     </div>
                 </div>
             </div>
         </header>
 
         <div class="main-grid">
-            <div class="glass-panel">
+            <div class="panel">
                 <div class="type-toggles">
-                    <div class="type-card active" data-type="HEA"><h3>HEA</h3><span data-i18n="light">Light</span></div>
-                    <div class="type-card" data-type="HEB"><h3>HEB</h3><span data-i18n="standard">Standard</span></div>
-                    <div class="type-card" data-type="HEM"><h3>HEM</h3><span data-i18n="heavy">Heavy</span></div>
+                    <div class="type-card active" data-type="HEA">HEA <span data-i18n="light">Light</span></div>
+                    <div class="type-card" data-type="HEB">HEB <span data-i18n="standard">Standard</span></div>
+                    <div class="type-card" data-type="HEM">HEM <span data-i18n="heavy">Heavy</span></div>
                 </div>
 
-                <div class="size-trigger-btn" id="openModalBtn">
+                <div class="size-selector" id="openModalBtn">
                     <div>
-                        <span class="label" style="margin-bottom:2px;" data-i18n="selectSize">Size</span>
-                        <div class="current-size-display">
-                            <span id="displayType" style="color:var(--primary);">HEA</span> 
-                            <span id="displaySize">100</span>
-                        </div>
+                        <span class="section-title" data-i18n="selectSize" style="margin-bottom: 4px;">Profile Size</span>
+                        <div class="current-size"><span id="displayType">HEA</span><span id="displaySize" style="color:var(--text-main)">100</span></div>
                     </div>
-                    <div style="opacity:0.5; font-size: 0.8rem;">▼</div>
+                    <svg width="20" height="20" fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
                 </div>
 
-                <div class="inputs-wrapper" style="margin-top: 25px;">
-                    <div class="length-container">
-                        <span class="label" data-i18n="enterLength">Length (mm)</span>
-                        <div class="input-row">
-                            <input type="number" id="lengthInput" class="small-input" value="1000" min="100" max="12000">
-                            <input type="range" id="lengthRange" min="100" max="12000" step="100" value="1000">
-                        </div>
-                    </div>
-                    
-                    <div class="qty-container">
-                        <span class="label" data-i18n="quantity">Quantity</span>
-                        <input type="number" id="qtyInput" value="1" min="1" max="1000" style="text-align: center;">
+                <div class="input-group">
+                    <span class="section-title" data-i18n="enterLength">Length (mm)</span>
+                    <div class="flex-row">
+                        <input type="range" id="lengthRange" min="100" max="12000" step="100" value="1000">
+                        <input type="number" id="lengthInput" value="1000" min="100" max="12000" style="width: 90px; text-align: center;">
                     </div>
                 </div>
 
-                <div style="margin-top: 20px;">
-                    <span class="label" data-i18n="coating">Coating Material</span>
-                    <select id="coatingSelect">
-                        <option value="standard" data-i18n="standardCoating">Standard Steel</option>
-                        <option value="galvanized" data-i18n="galvanized">Galvanized</option>
-                        <option value="fireproof" data-i18n="fireproof">Fireproof (Red)</option>
-                    </select>
+                <div class="input-group">
+                    <span class="section-title" data-i18n="quantity">Quantity (Pieces)</span>
+                    <div class="stepper-control">
+                        <button class="stepper-btn" id="btnMinus">-</button>
+                        <input type="number" id="qtyInput" value="1" min="1" max="1000">
+                        <button class="stepper-btn" id="btnPlus">+</button>
+                    </div>
+                </div>
+
+                <div class="input-group" style="margin-bottom: 0;">
+                    <span class="section-title" data-i18n="coating">Coating Material</span>
+                    <div style="position: relative;">
+                        <select id="coatingSelect">
+                            <option value="standard" data-i18n="standardCoating">Standard Steel (Raw)</option>
+                            <option value="galvanized" data-i18n="galvanized">Hot-Dip Galvanized</option>
+                            <option value="fireproof" data-i18n="fireproof">Fireproof Paint (Red)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <div class="right-panel">
+            <div class="panel right-panel">
                 <div class="canvas-container">
                     <div id="webgl-canvas" style="width:100%; height:100%;"></div>
                 </div>
 
-                <div class="result-screen" id="mainScreen">
-                    <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; pointer-events:none; opacity:0.3;"></div>
-                    <span class="screen-label" data-i18n="totalWeight">CALCULATED WEIGHT</span>
-                    
-                    <div class="weight-wrapper">
-                        <div id="animatedWeight">000.00</div>
-                        <div class="unit-tag" id="unitDisplay">KG</div>
-                    </div>
-                    <div class="weight-bar-container"><div class="weight-bar-fill" id="weightBar"></div></div>
+                <div class="result-display" id="mainScreen">
+                    <span class="section-title" data-i18n="totalWeight">Total Calculated Weight</span>
+                    <div class="weight-value" id="animatedWeight">0.00</div>
+                    <div class="weight-unit" id="unitDisplay">KG</div>
                 </div>
 
                 <div class="action-bar">
-                    <button class="action-btn" id="addBomBtn" style="background: var(--status-safe); color: #fff; border:none;">
+                    <button class="btn btn-primary" id="addBomBtn">
                         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
                         <span data-i18n="addToList">Add to List</span>
                     </button>
-                    <button class="action-btn" onclick="toggleHistory(true)">
+                    <button class="btn btn-secondary" onclick="toggleHistory(true)">
                         <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                        <span data-i18n="projectListBtn">Project List</span>
-                    </button>
-                    <button class="action-btn" id="printBtn">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"></path></svg>
-                        <span data-i18n="print">Report</span>
+                        <span data-i18n="projectListBtn">Open List</span>
                     </button>
                 </div>
             </div>
@@ -387,31 +394,29 @@
 
         const translations = {
             en: { 
-                light:"Light", standard:"Standard", heavy:"Heavy", enterLength:"Length (mm)", quantity:"Qty",
-                selectSize:"Select Size", totalWeight:"CALCULATED WEIGHT", print:"Report", 
-                coating:"Coating Material", standardCoating:"Standard Steel", galvanized:"Galvanized", 
-                fireproof:"Fireproof (Red)", addToList:"Add to List", projectListBtn:"Project List", projectList:"Project List"
+                light:"Light", standard:"Standard", heavy:"Heavy", enterLength:"Length (mm)", quantity:"Quantity (Pieces)",
+                selectSize:"Profile Size", totalWeight:"Total Calculated Weight", print:"Print Report", 
+                coating:"Coating Material", standardCoating:"Standard Steel (Raw)", galvanized:"Hot-Dip Galvanized", 
+                fireproof:"Fireproof Paint (Red)", addToList:"Add to List", projectListBtn:"Open List", projectList:"Project List"
             },
             ar: { 
-                light:"خفيف", standard:"قياسي", heavy:"ثقيل", enterLength:"الطول (مم)", quantity:"العدد",
-                selectSize:"اختر الحجم", totalWeight:"الوزن المحسوب", print:"تقرير", 
-                coating:"مادة الطلاء", standardCoating:"فولاذ قياسي", galvanized:"مجلڤن", 
-                fireproof:"مقاوم للحريق (أحمر)", addToList:"أضف للقائمة", projectListBtn:"قائمة المشروع", projectList:"قائمة المشروع"
+                light:"خفيف", standard:"قياسي", heavy:"ثقيل", enterLength:"الطول (مم)", quantity:"العدد (قطع)",
+                selectSize:"مقاس المقطع", totalWeight:"الوزن الإجمالي المحسوب", print:"طباعة التقرير", 
+                coating:"مادة الطلاء", standardCoating:"فولاذ قياسي (خام)", galvanized:"مجلڤن بالغمس الساخن", 
+                fireproof:"دهان مقاوم للحريق (أحمر)", addToList:"أضف للقائمة", projectListBtn:"افتح القائمة", projectList:"قائمة المشروع"
             },
-            de: { // الترجمة الألمانية الجديدة
-                light:"Leicht", standard:"Standard", heavy:"Schwer", enterLength:"Länge (mm)", quantity:"Menge",
-                selectSize:"Größe wählen", totalWeight:"BERECHNETES GEWICHT", print:"Bericht", 
-                coating:"Beschichtung", standardCoating:"Standardstahl", galvanized:"Verzinkt", 
-                fireproof:"Feuerfest (Rot)", addToList:"Zur Liste hinzufügen", projectListBtn:"Projektliste", projectList:"Projektliste"
+            de: {
+                light:"Leicht", standard:"Standard", heavy:"Schwer", enterLength:"Länge (mm)", quantity:"Menge (Stück)",
+                selectSize:"Profilgröße", totalWeight:"Gesamtberechnetes Gewicht", print:"Bericht drucken", 
+                coating:"Beschichtungsmaterial", standardCoating:"Standardstahl (Roh)", galvanized:"Feuerverzinkt", 
+                fireproof:"Feuerfeste Farbe (Rot)", addToList:"Zur Liste hinzufügen", projectListBtn:"Liste öffnen", projectList:"Projektliste"
             }
         };
 
-        // --- STATE --- (تمت إضافة quantity للتعقب)
         let state = { lang: 'en', type: 'HEA', size: 100, length: 1000, quantity: 1, currentDisplayedWeight: 0, theme: 'dark', coating: 'standard' };
         let projectBOM = [];
         let scene, camera, renderer, mesh, controls, animationFrameId;
 
-        // --- INIT ---
         init();
         function init() {
             init3D();
@@ -421,13 +426,11 @@
             updateBOMUI();
         }
 
-        // --- GLOBAL FUNCTIONS EXPORT ---
         window.toggleTheme = () => {
             state.theme = state.theme === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', state.theme);
-            document.getElementById('themeBtn').textContent = state.theme === 'dark' ? '☀️' : '🌙';
-            const color = state.theme === 'dark' ? 0x000000 : 0xe2e8f0;
-            renderer.setClearColor(color, state.theme === 'dark' ? 0 : 1);
+            const color = state.theme === 'dark' ? 0x0f172a : 0xf8fafc;
+            renderer.setClearColor(color, 1);
         };
 
         window.toggleLangMenu = (e) => {
@@ -446,9 +449,10 @@
 
             const flags = { en: '🇺🇸', ar: '🇸🇦', de: '🇩🇪' };
             const labels = { en: 'EN', ar: 'AR', de: 'DE' };
-            document.getElementById('currentLangLabel').innerHTML = `<span class="flag">${flags[code]}</span> ${labels[code]}`;
+            document.getElementById('currentLangLabel').innerHTML = `${flags[code]} ${labels[code]}`;
             document.getElementById('langMenu').classList.remove('show');
             document.querySelectorAll('.lang-option').forEach(o => o.classList.remove('selected'));
+            document.querySelector(`.lang-option[onclick="selectLang('${code}')"]`).classList.add('selected');
         };
 
         window.toggleHistory = (show) => {
@@ -471,13 +475,22 @@
             lInput.addEventListener('input', (e) => updateLength(e.target.value));
             lRange.addEventListener('input', (e) => updateLength(e.target.value));
 
-            // حدث تغيير العدد
-            document.getElementById('qtyInput').addEventListener('input', (e) => {
-                let val = parseInt(e.target.value);
-                if(isNaN(val) || val < 1) val = 1;
-                state.quantity = val;
+            // Stepper (Quantity)
+            const qtyInput = document.getElementById('qtyInput');
+            const btnMinus = document.getElementById('btnMinus');
+            const btnPlus = document.getElementById('btnPlus');
+
+            const updateQty = (val) => {
+                let newVal = parseInt(val);
+                if (isNaN(newVal) || newVal < 1) newVal = 1;
+                qtyInput.value = newVal;
+                state.quantity = newVal;
                 calculateAndAnimate();
-            });
+            };
+
+            qtyInput.addEventListener('change', (e) => updateQty(e.target.value));
+            btnMinus.addEventListener('click', () => updateQty(state.quantity - 1));
+            btnPlus.addEventListener('click', () => updateQty(state.quantity + 1));
 
             document.getElementById('coatingSelect').addEventListener('change', (e) => {
                 state.coating = e.target.value;
@@ -491,8 +504,7 @@
             document.getElementById('addBomBtn').addEventListener('click', addToBOM);
             document.getElementById('printBtn').addEventListener('click', printReport);
         }
-
-        // --- LOGIC ---
+        // --- LOGIC (العمليات الحسابية والواجهة) ---
         function setProfileType(type) {
             state.type = type;
             document.getElementById('displayType').textContent = type;
@@ -517,14 +529,15 @@
         function calculateAndAnimate() {
             const data = steelDatabase[state.type][state.size];
             if (!data) return;
-            // حساب الوزن مضروباً في العدد
+            
+            // حساب الوزن = (الطول بالمتر × الوزن للمتر الطولي) × العدد
             const trueWeightKg = ((state.length / 1000) * data.w) * state.quantity;
             
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
             const startVal = state.currentDisplayedWeight;
             const diff = trueWeightKg - startVal;
             const startTime = performance.now();
-            const duration = 500;
+            const duration = 400;
 
             function update(time) {
                 const elapsed = time - startTime;
@@ -543,22 +556,15 @@
         function renderResult(val) {
             const displayEl = document.getElementById('animatedWeight');
             const unitEl = document.getElementById('unitDisplay');
-            const screenEl = document.getElementById('mainScreen');
-            const barEl = document.getElementById('weightBar');
             
-            screenEl.className = 'result-screen'; 
-
             if (val >= 1000) {
                 displayEl.textContent = (val / 1000).toFixed(3);
                 unitEl.textContent = "TON";
-                screenEl.classList.add('state-danger');
-                barEl.style.width = '100%';
+                displayEl.style.color = "var(--status-dang)";
             } else {
                 displayEl.textContent = val.toFixed(2);
                 unitEl.textContent = "KG";
-                let pct = (val / 1000) * 100;
-                if (val >= 500) screenEl.classList.add('state-warning');
-                barEl.style.width = `${pct}%`;
+                displayEl.style.color = val >= 500 ? "var(--status-warn)" : "var(--status-safe)";
             }
         }
 
@@ -573,7 +579,7 @@
             const sizes = Object.keys(steelDatabase[state.type]);
             sizes.forEach(s => {
                 const item = document.createElement('div');
-                item.className = `modal-size-item ${s == state.size ? 'active' : ''}`;
+                item.className = `size-badge ${s == state.size ? 'active' : ''}`;
                 item.textContent = s;
                 item.onclick = () => {
                     state.size = s;
@@ -585,12 +591,12 @@
                 grid.appendChild(item);
             });
         }
+
         // --- BOM (BILL OF MATERIALS) LOGIC ---
         function addToBOM() {
             const data = steelDatabase[state.type][state.size];
             if (!data) return;
             
-            // حساب الوزن الإجمالي للقطعة مضروباً في العدد
             const singleWeight = (state.length / 1000) * data.w;
             const totalWeight = singleWeight * state.quantity;
             
@@ -608,7 +614,11 @@
             const btn = document.getElementById('addBomBtn');
             const origHTML = btn.innerHTML;
             btn.innerHTML = `✅ Added`;
-            setTimeout(() => btn.innerHTML = origHTML, 1000);
+            btn.style.backgroundColor = "var(--status-safe)";
+            setTimeout(() => {
+                btn.innerHTML = origHTML;
+                btn.style.backgroundColor = "";
+            }, 1000);
         }
 
         function updateBOMUI() {
@@ -627,16 +637,17 @@
                 const el = document.createElement('div');
                 el.className = 'history-item';
                 el.innerHTML = `
-                    <div class="history-details" style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <span style="display:block; font-weight: bold; color: var(--text-main);">
-                                ${item.type} ${item.size} - ${item.length}mm <span style="color:var(--status-warn);">[x${item.quantity}]</span>
+                            <span style="display:block; font-weight: 600; color: var(--text-main); font-size: 0.95rem;">
+                                ${item.type} ${item.size} <span style="color:var(--text-muted); font-weight:400;">(${item.length}mm)</span>
                             </span>
-                            <span style="font-size:0.7rem; color:var(--text-muted);">${item.coating.toUpperCase()}</span>
+                            <span style="font-size:0.8rem; color:var(--primary); font-weight: 600;">x${item.quantity} Pieces</span>
+                            <span style="font-size:0.75rem; color:var(--text-muted); margin-left:8px;">${item.coating}</span>
                         </div>
                         <div style="text-align:right;">
-                            <span style="color:var(--primary); display:block; font-weight: bold;">${item.weight.toFixed(2)} KG</span>
-                            <button onclick="removeFromBOM(${index})" style="background:none; border:none; color:var(--status-dang); cursor:pointer; font-size:0.8rem; margin-top: 5px;">Remove</button>
+                            <span style="color:var(--text-main); display:block; font-weight: 700; font-family:var(--font-digit);">${item.weight.toFixed(2)} KG</span>
+                            <button onclick="removeFromBOM(${index})" style="background:none; border:none; color:var(--status-dang); cursor:pointer; font-size:0.8rem; margin-top: 5px; font-weight:500;">Remove</button>
                         </div>
                     </div>
                 `;
@@ -644,10 +655,14 @@
             });
 
             const totalEl = document.createElement('div');
-            totalEl.style.cssText = "margin-top:20px; padding:15px; background:rgba(16, 185, 129, 0.1); border:1px solid var(--status-safe); border-radius:10px; text-align:center;";
+            totalEl.style.cssText = "margin-top:20px; padding:20px; background:var(--card-bg); border:1px solid var(--primary); border-radius:10px; text-align:center; box-shadow: var(--shadow-md);";
+            
+            const isTon = totalProjectWeight >= 1000;
+            const finalWeightText = isTon ? (totalProjectWeight/1000).toFixed(3) + ' TON' : totalProjectWeight.toFixed(2) + ' KG';
+            
             totalEl.innerHTML = `
-                <span style="color:var(--text-muted); font-size:0.8rem; display:block;" data-i18n="totalWeight">Total Project Weight</span>
-                <strong style="color:var(--status-safe); font-size:1.5rem; font-family:var(--font-digit);">${totalProjectWeight >= 1000 ? (totalProjectWeight/1000).toFixed(3) + ' TON' : totalProjectWeight.toFixed(2) + ' KG'}</strong>
+                <span style="color:var(--text-muted); font-size:0.85rem; display:block; text-transform:uppercase; font-weight:600; margin-bottom:5px;">Total Project Weight</span>
+                <strong style="color:var(--primary); font-size:1.8rem; font-family:var(--font-digit);">${finalWeightText}</strong>
             `;
             list.appendChild(totalEl);
         }
@@ -677,18 +692,21 @@
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
             renderer.setSize(w, h);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.setClearColor(0x000000, 0);
+            renderer.setClearColor(state.theme === 'dark' ? 0x0f172a : 0xf8fafc, 1);
             container.appendChild(renderer.domElement);
 
             controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
+            controls.enablePan = false;
 
-            const al = new THREE.AmbientLight(0xffffff, 0.7);
+            const al = new THREE.AmbientLight(0xffffff, 0.8);
             scene.add(al);
             const dl = new THREE.DirectionalLight(0xffffff, 1.2); dl.position.set(10, 20, 10); scene.add(dl);
             const bl = new THREE.DirectionalLight(0x3b82f6, 0.8); bl.position.set(-10, 5, -5); scene.add(bl);
             
-            scene.add(new THREE.GridHelper(50, 50, 0x444444, 0x111111));
+            const grid = new THREE.GridHelper(50, 50, 0x334155, 0x1e293b);
+            grid.position.y = -5;
+            scene.add(grid);
 
             update3D();
             
@@ -726,19 +744,18 @@
             const geo = new THREE.ExtrudeGeometry(shape, { steps: 1, depth: visualLen, bevelEnabled: false });
             geo.center();
             
-            // تحديد خصائص المادة بناءً على الطلاء المختار
-            let matColor = 0x64748b; // Standard Grey
-            let matMetalness = 0.6;
-            let matRoughness = 0.4;
+            let matColor = 0x475569; 
+            let matMetalness = 0.5;
+            let matRoughness = 0.5;
 
             if (state.coating === 'galvanized') {
-                matColor = 0xd4d4d8; // Shiny Silver
-                matMetalness = 0.95;
-                matRoughness = 0.1;
+                matColor = 0xe2e8f0; 
+                matMetalness = 0.9;
+                matRoughness = 0.2;
             } else if (state.coating === 'fireproof') {
-                matColor = 0xb91c1c; // Fireproof Red
+                matColor = 0xef4444; 
                 matMetalness = 0.1;
-                matRoughness = 0.85;
+                matRoughness = 0.9;
             }
 
             const mat = new THREE.MeshStandardMaterial({ 
